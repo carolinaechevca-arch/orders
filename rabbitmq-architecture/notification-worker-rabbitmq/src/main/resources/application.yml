@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: notification-worker-rabbitmq
+  main:
+    web-application-type: none
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:orders}
+    password: ${RABBITMQ_PASSWORD:orders}
+    connection-timeout: 10s
+    listener:
+      simple:
+        retry:
+          enabled: true
+          initial-interval: 2s
+          max-attempts: 5
+          multiplier: 2
+
+app:
+  rabbitmq:
+    exchange: ${RABBITMQ_EXCHANGE:orders.exchange}
+    queue: ${RABBITMQ_QUEUE:orders.queue}
+    routing-key: ${RABBITMQ_ROUTING_KEY:orders.process}
+
+logging:
+  pattern:
+    level: "%5p [correlationId=%X{correlationId:-}, orderId=%X{orderId:-}]"

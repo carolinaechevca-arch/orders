@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: notification-consumer-kafka
+  main:
+    web-application-type: none
+  kafka:
+    bootstrap-servers: ${KAFKA_BROKER:localhost:29092}
+    consumer:
+      group-id: ${KAFKA_GROUP_ID:notification-service-group}
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: com.taller.notificationkafka.domain.model
+        spring.json.use.type.headers: false
+        spring.json.value.default.type: com.taller.notificationkafka.domain.model.OrderCreatedEvent
+    listener:
+      ack-mode: record
+      missing-topics-fatal: false
+app:
+  kafka:
+    topic: ${KAFKA_TOPIC:orders.events}
+logging:
+  pattern:
+    level: "%5p [correlationId=%X{correlationId:-}, orderId=%X{orderId:-}]"
